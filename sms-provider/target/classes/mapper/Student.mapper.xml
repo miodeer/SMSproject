@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ekgc.sms.dao.StudentDao">
+	<select id="findStudentListByQuery" parameterType="java.util.Map" resultMap="studentMap">
+		select
+			ss.student_id,
+			ss.student_no,
+			ss.student_name,
+			ss.gender,
+			sc.classroom_id,
+			sc.classroom_no,
+			ss.id_card
+		from
+			sys_student ss join sys_classroom sc on ss.classroom_id=sc.classroom_id
+		<if test="begin != null">
+			limit #{begin}, #{size}
+		</if>
+	</select>
+	
+	<insert id="saveStudent" parameterType="Student">
+		insert into sys_student(
+			<if test="studentNo != null">student_no, </if>
+			student_name,
+			gender,
+			id_card,
+			classroom_id
+		) values(
+			<if test="studentNo != null">#{studentNo},</if>
+			#{studentName},
+			#{gender},
+			#{idCard},
+			#{classroom.classroomId}
+		)
+	</insert>
+
+	<select id="findStudentById" parameterType="java.lang.Long" resultMap="studentMap">
+		select
+			ss.student_id,
+			ss.student_no,
+			ss.student_name,
+			ss.gender,
+			sc.classroom_id,
+			sc.classroom_no,
+			ss.id_card
+		from
+			sys_student ss join sys_classroom sc on ss.classroom_id=sc.classroom_id
+		where
+			ss.student_id=#{studentId}
+	</select>
+
+	<resultMap id="studentMap" type="Student">
+		<id property="studentId" javaType="java.lang.Long" column="student_id"/>
+		<result property="studentNo" javaType="java.lang.String" column="student_no"/>
+		<result property="studentName" javaType="java.lang.String" column="student_name"/>
+		<result property="gender" javaType="java.lang.String" column="gender"/>
+		<result property="idCard" javaType="java.lang.String" column="id_card"/>
+		<association property="classroom" javaType="Classroom">
+			<id property="classroomId" javaType="java.lang.Long" column="classroom_id"/>
+			<result property="classroomNo" javaType="java.lang.String" column="classroom_no"/>
+		</association>
+	</resultMap>
+</mapper>
